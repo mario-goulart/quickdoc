@@ -142,7 +142,7 @@ exec csi -s $0 "$@"
    (map (lambda (req)
           (let ((link-egg
                  (lambda (egg)
-                   (conc "[[http://chicken.wiki.br/eggref/4/" egg "|" egg "]]"))))
+                   (conc "[[http://wiki.call-cc.org/egg/" egg "|" egg "]]"))))
             (string-append
              "* "
              (if (list? req)
