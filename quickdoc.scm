@@ -12,6 +12,12 @@ exec csi -s $0 "$@"
       (cadr data)
       (error "Cannot determine module name.")))
 
+(define (load-definition-files files)
+  (let loop ((files files))
+    (if (null? files)
+      '()
+      (append (with-input-from-file (car files) read-file) (loop (cdr files))))))
+
 (define (module-data mod-file)
   (let ((data (with-input-from-file mod-file read-file)))
     (let loop ((data data))
@@ -125,6 +131,10 @@ exec csi -s $0 "$@"
             (and (exported? record)
                  (conc "[record] ('''" record "''' " (string-intersperse (map ->string args)) ")")))
 
+           
+           (('include files ...)
+            (format-definitions (load-definition-files files) exported))
+
            (else #f))))
    mod-data))
 
@@ -151,6 +161,12 @@ exec csi -s $0 "$@"
         requirements)
    "\n"))
 
+(define (print-api definitions)
+  (for-each (lambda (def)
+              (if (list? def)
+                (print-api def)
+                (print def "\n"))) definitions))
+
 (define (initial-wiki-doc module-file meta-file)
   (let* ((data (module-data module-file))
          (meta-data (meta-data-obj meta-file))
@@ -166,9 +182,7 @@ exec csi -s $0 "$@"
     (print "=== Requirements\n\n" requirements "\n\n")
     (print "=== Description\n\n" description "\n\n")
     (print "=== API\n")
-    (for-each (cut print <> "\n")
-              (format-definitions (module-body data)
-                                  (module-exported-symbols data)))
+    (print-api (format-definitions (module-body data) (module-exported-symbols data)))
     (print "\n=== License\n\n" license "\n\n")
     (print "=== Version history\n")))
 
