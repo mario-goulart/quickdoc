@@ -2,7 +2,8 @@
 #| -*- scheme -*-
 exec csi -s $0 "$@"
 |#
-(use matchable srfi-1 utils)
+(use irregex srfi-1 utils)
+(use matchable)
 
 (define (module-body data)
   (cddr data))
@@ -94,7 +95,11 @@ exec csi -s $0 "$@"
                  (conc "<procedure>(" proc " "
                        (if (symbol? args)
                            args
-                           (string-substitute* (->string args) '(("^\\(" . "") ("\\)$" . ""))))
+                           (irregex-replace "\\)$"
+                                            (irregex-replace "^\\("
+                                                             (->string args)
+                                                             "")
+                                            ""))
                        ")</procedure>")))
 
            (('define param ('make-parameter value))
@@ -193,8 +198,12 @@ exec csi -s $0 "$@"
   (when exit-code (exit exit-code)))
 
 (define (command-line-option option args)
-  (let ((val (any (cut string-match (string-append option "=(.*)") <>) args)))
-    (and val (cadr val))))
+  (let ((val (any (lambda (arg)
+                    (irregex-match
+                     `(seq ,(->string option) "=" (submatch (* any)))
+                     arg))
+                  args)))
+    (and val (irregex-match-substring val 1))))
 
 (let ((args (command-line-arguments)))
   (when (null? args)
