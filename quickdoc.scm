@@ -164,8 +164,9 @@ exec csi -s $0 "$@"
 (define (print-api definitions)
   (for-each (lambda (def)
               (if (list? def)
-                (print-api def)
-                (print def "\n"))) definitions))
+                  (print-api def)
+                  (print def "\n")))
+            definitions))
 
 (define (initial-wiki-doc module-file meta-file)
   (let* ((data (module-data module-file))
@@ -182,7 +183,8 @@ exec csi -s $0 "$@"
     (print "=== Requirements\n\n" requirements "\n\n")
     (print "=== Description\n\n" description "\n\n")
     (print "=== API\n")
-    (print-api (format-definitions (module-body data) (module-exported-symbols data)))
+    (print-api (format-definitions (module-body data)
+                                   (module-exported-symbols data)))
     (print "\n=== License\n\n" license "\n\n")
     (print "=== Version history\n")))
 
