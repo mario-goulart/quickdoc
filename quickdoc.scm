@@ -2,7 +2,7 @@
 #| -*- scheme -*-
 exec csi -s $0 "$@"
 |#
-(use irregex srfi-1 utils)
+(use data-structures extras files irregex posix srfi-1 utils)
 (use matchable)
 
 (define (module-body data)
