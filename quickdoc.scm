@@ -63,7 +63,7 @@ exec csi -s $0 "$@"
 (define (format-parameter-value value)
   (if (and (pair? value) (eq? (car value) 'lambda))
       "procedure"
-      value))
+      (string-chomp (with-output-to-string (cut pp value)))))
 
 (define (format-definitions mod-data exported)
 
