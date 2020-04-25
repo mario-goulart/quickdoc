@@ -150,8 +150,9 @@ exec csi -s $0 "$@"
             (and (exported? param)
                  (conc "<parameter>(" param " [default=" (format-parameter-value value) "])</parameter>")))
 
-           ((or ('define-syntax identifier (syntax-rules ...))
-                ('define-syntax identifier (er-macro-transformer ...)))
+           ((or ('define-syntax identifier ('syntax-rules ...))
+                ('define-syntax identifier ('er-macro-transformer ...))
+                ('define-syntax identifier ('ir-macro-transformer ...)))
             (and (exported? identifier)
                  (conc "<macro>(" identifier " ...)</macro>")))
 
