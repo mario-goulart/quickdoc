@@ -210,6 +210,7 @@ exec csi -s $0 "$@"
                               '()))))))
     (print "== " (module-name data) "\n")
     (print "=== Author\n\n" author "\n\n")
+    (print "=== Repository\n\n")
     (print "=== Requirements\n\n" requirements "\n\n")
     (print "=== Description\n\n" description "\n\n")
     (print "=== API\n")
