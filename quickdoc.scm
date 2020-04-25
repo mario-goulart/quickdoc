@@ -2,8 +2,27 @@
 #| -*- scheme -*-
 exec csi -s $0 "$@"
 |#
-(use data-structures extras files irregex posix srfi-1 utils)
-(use matchable)
+
+(import scheme)
+(cond-expand
+ (chicken-4
+  (use data-structures extras files irregex posix srfi-1 utils)
+  (use matchable)
+  (define read-list read-file))
+ (chicken-5
+  (import (chicken condition)
+          (chicken file)
+          (chicken format)
+          (chicken io)
+          (chicken irregex)
+          (chicken pathname)
+          (chicken port)
+          (chicken pretty-print)
+          (chicken process-context)
+          (chicken string))
+  (import matchable srfi-1))
+ (else
+  (error "Unsupported CHICKEN version.")))
 
 (define (module-body data)
   (cddr data))
@@ -17,10 +36,10 @@ exec csi -s $0 "$@"
   (let loop ((files files))
     (if (null? files)
       '()
-      (append (with-input-from-file (car files) read-file) (loop (cdr files))))))
+      (append (with-input-from-file (car files) read-list) (loop (cdr files))))))
 
 (define (module-data mod-file)
-  (let ((data (with-input-from-file mod-file read-file)))
+  (let ((data (with-input-from-file mod-file read-list)))
     (let loop ((data data))
       (if (null? data)
           '()
@@ -180,9 +199,15 @@ exec csi -s $0 "$@"
          (description (meta-data 'synopsis))
          (license (meta-data 'license))
          (requirements (format-requirements
-                        (or (meta-data 'depends #f #t)
-                            (meta-data 'needs #f #t)
-                            '()))))
+                        (cond-expand
+                         (chicken-4
+                          (or (meta-data 'depends #f #t)
+                              (meta-data 'needs #f #t)
+                              '()))
+                         (chicken-5
+                          (or (meta-data 'dependencies #f #t)
+                              (meta-data 'build-dependencies #f #t)
+                              '()))))))
     (print "== " (module-name data) "\n")
     (print "=== Author\n\n" author "\n\n")
     (print "=== Requirements\n\n" requirements "\n\n")
@@ -214,8 +239,14 @@ exec csi -s $0 "$@"
          (meta-file (handle-exceptions
                      exn
                      (begin
-                       (print "Could not find a .meta file.")
+                       (fprintf (current-error-port) "Could not find a ~a file.\n"
+                                (cond-expand
+                                 (chicken-4 ".meta")
+                                 (chicken-5 ".egg")))
                        (exit 1))
-                     (car (glob (make-pathname eggdir "*.meta")))))
+                     (car (glob (make-pathname eggdir
+                                               (cond-expand
+                                                (chicken-4 "*.meta")
+                                                (chicken-5 "*.egg")))))))
          (module-file (pathname-replace-extension meta-file "scm")))
     (initial-wiki-doc module-file meta-file)))
