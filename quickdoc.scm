@@ -241,8 +241,8 @@ exec csi -s $0 "$@"
 (let ((args (command-line-arguments)))
   (when (null? args)
     (usage 1))
-  (when (member (car args) '("-h" "--help"))
-    (usage 1))
+  (when (member (car args) '("-h" "-help" "--help"))
+    (usage 0))
   (let* ((eggdir (last args))
          (meta-file (handle-exceptions
                      exn
