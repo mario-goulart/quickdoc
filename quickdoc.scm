@@ -198,20 +198,23 @@ exec csi -s $0 "$@"
          (author (meta-data 'author))
          (description (meta-data 'synopsis))
          (license (meta-data 'license))
-         (requirements (format-requirements
-                        (cond-expand
-                         (chicken-4
-                          (or (meta-data 'depends #f #t)
-                              (meta-data 'needs #f #t)
-                              '()))
-                         (chicken-5
-                          (or (meta-data 'dependencies #f #t)
-                              (meta-data 'build-dependencies #f #t)
-                              '()))))))
+         (requirements (cond-expand
+                        (chicken-4
+                         (or (meta-data 'depends #f #t)
+                             (meta-data 'needs #f #t)
+                             '()))
+                        (chicken-5
+                         (or (meta-data 'dependencies #f #t)
+                             (meta-data 'build-dependencies #f #t)
+                             '())))))
     (print "== " (module-name data) "\n")
     (print "=== Author\n\n" author "\n\n")
     (print "=== Repository\n\n")
-    (print "=== Requirements\n\n" requirements "\n\n")
+    (print "=== Requirements\n\n"
+           (if (null? requirements)
+               "None"
+               (format-requirements requirements))
+           "\n\n")
     (print "=== Description\n\n" description "\n\n")
     (print "=== API\n")
     (print-api (format-definitions (module-body data)
