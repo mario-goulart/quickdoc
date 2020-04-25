@@ -229,14 +229,6 @@ exec csi -s $0 "$@"
     (fprintf port "~a <egg dir>\n" program)
     (when exit-code (exit exit-code))))
 
-(define (command-line-option option args)
-  (let ((val (any (lambda (arg)
-                    (irregex-match
-                     `(seq ,(->string option) "=" (submatch (* any)))
-                     arg))
-                  args)))
-    (and val (irregex-match-substring val 1))))
-
 (let ((args (command-line-arguments)))
   (when (null? args)
     (usage 1))
