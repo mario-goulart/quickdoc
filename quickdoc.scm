@@ -245,18 +245,20 @@ exec csi -s $0 "$@"
     (usage 1))
   (when (member (car args) '("-h" "-help" "--help"))
     (usage 0))
-  (let* ((eggdir (last args))
-         (meta-file (handle-exceptions
-                     exn
-                     (begin
-                       (fprintf (current-error-port) "Could not find a ~a file.\n"
-                                (cond-expand
-                                 (chicken-4 ".meta")
-                                 (chicken-5 ".egg")))
-                       (exit 1))
-                     (car (glob (make-pathname eggdir
-                                               (cond-expand
-                                                (chicken-4 "*.meta")
-                                                (chicken-5 "*.egg")))))))
-         (module-file (pathname-replace-extension meta-file "scm")))
-    (initial-wiki-doc module-file meta-file)))
+  (let ((eggdir (last args)))
+    (change-directory eggdir)
+    (let* ((meta-file
+            (handle-exceptions
+                exn
+              (begin
+                (fprintf (current-error-port) "Could not find a ~a file.\n"
+                         (cond-expand
+                          (chicken-4 ".meta")
+                          (chicken-5 ".egg")))
+                (exit 1))
+              (car (glob (make-pathname eggdir
+                                        (cond-expand
+                                         (chicken-4 "*.meta")
+                                         (chicken-5 "*.egg")))))))
+           (module-file (pathname-replace-extension meta-file "scm")))
+      (initial-wiki-doc module-file meta-file))))
