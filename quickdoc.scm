@@ -10,7 +10,8 @@ exec csi -s $0 "$@"
   (use matchable)
   (define read-list read-file))
  (chicken-5
-  (import (chicken condition)
+  (import (chicken base)
+          (chicken condition)
           (chicken file)
           (chicken format)
           (chicken io)
