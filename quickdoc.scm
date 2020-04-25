@@ -223,8 +223,12 @@ exec csi -s $0 "$@"
     (print "=== Version history\n")))
 
 (define (usage #!optional exit-code)
-  (print (pathname-strip-directory (program-name)) " <egg-dir>")
-  (when exit-code (exit exit-code)))
+  (let ((port (if (zero? exit-code)
+                  (current-output-port)
+                  (current-error-port)))
+        (program (pathname-strip-directory (program-name))))
+    (fprintf port "~a <egg dir>\n" program)
+    (when exit-code (exit exit-code))))
 
 (define (command-line-option option args)
   (let ((val (any (lambda (arg)
