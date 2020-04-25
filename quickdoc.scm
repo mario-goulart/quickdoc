@@ -16,6 +16,7 @@ exec csi -s $0 "$@"
           (chicken io)
           (chicken irregex)
           (chicken pathname)
+          (chicken platform)
           (chicken port)
           (chicken pretty-print)
           (chicken process-context)
@@ -23,6 +24,9 @@ exec csi -s $0 "$@"
   (import matchable srfi-1))
  (else
   (error "Unsupported CHICKEN version.")))
+
+(define chicken-major-version
+  (car (string-split (chicken-version) ".")))
 
 (define (module-body data)
   (cddr data))
@@ -175,7 +179,8 @@ exec csi -s $0 "$@"
    (map (lambda (req)
           (let ((link-egg
                  (lambda (egg)
-                   (conc "[[http://wiki.call-cc.org/egg/" egg "|" egg "]]"))))
+                   (sprintf "[[//eggs.call-cc.org/~a/~a|~a]]"
+                            chicken-major-version egg egg))))
             (string-append
              "* "
              (if (list? req)
