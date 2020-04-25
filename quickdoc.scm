@@ -155,7 +155,6 @@ exec csi -s $0 "$@"
             (and (exported? record)
                  (conc "[record] ('''" record "''' " (string-intersperse (map ->string args)) ")")))
 
-           
            (('include files ...)
             (format-definitions (load-definition-files files) exported))
 
