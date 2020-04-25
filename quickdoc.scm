@@ -3,6 +3,10 @@
 exec csi -s $0 "$@"
 |#
 
+;;;; TODO
+;; * Handle all scheme files with modules
+;; * Module subsections in the API section
+
 (import scheme)
 (cond-expand
  (chicken-4
